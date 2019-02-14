@@ -1,0 +1,49 @@
+---
+# YAML file for mounting virtual media 
+- hosts: localhost
+  connection: local
+  gather_facts: no
+  vars:
+    contents: "{{ lookup('file', './inputs.csv') }}"
+    lines: "{{ contents.split('\n') }}"
+  tasks:
+  - name: Get DNS servers
+    get_ilo_nic_dns:
+      ilo_ip: "{{ item.split(',')[0] }}"
+      ilo_user: "{{ item.split(',')[1] }}"
+      ilo_pass: "{{ item.split(',')[2] }}"
+    register: get_response
+    when: item.split(',')[0] != 'iLO_IP'
+    with_items:
+      - "{{ lines }}"
+
+  - update_csv: 
+      ilo_ip: "{{ item.invocation.module_args.ilo_ip }}"
+      csvfile_path: "{{ playbook_dir}}/inputs.csv"
+      col_name: "DNS_Servers" 
+      data: "{{ item.DNSServers }}"
+    when: item.changed == true
+    with_items: "{{ get_response.results }}"
+
+  - name: Set DNS servers
+    set_ilo_nic_dns:
+      ilo_ip: "{{ item.split(',')[0] }}"
+      ilo_user: "{{ item.split(',')[1] }}"
+      ilo_pass: "{{ item.split(',')[2] }}"
+      new_dns_servers: "{{ item.split(',')[4] }}"
+    register: set_response
+    when: item.split(',')[0] != 'iLO_IP'
+    with_items:
+      - "{{ lines }}"
+
+#  - debug: msg="{{ set_response }}"
+
+  - update_csv:
+      ilo_ip: "{{ item.invocation.module_args.ilo_ip }}"
+      csvfile_path: "{{ playbook_dir}}/inputs.csv"
+      col_name: "Remarks"
+      data: "{{ item.failed }}"
+    when: item.item.split(',')[0] != 'iLO_IP'
+    with_items: "{{ set_response.results }}"
+
+

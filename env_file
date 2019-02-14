@@ -1,0 +1,2 @@
+export ANSIBLE_LIBRARY=$PWD/lib/oneview-ansible/library/:$PWD/library/ilo-ansible/
+export ANSIBLE_MODULE_UTILS=$PWD/lib/oneview-ansible/library/module_utils/:$PWD/library/ilo-ansible/
