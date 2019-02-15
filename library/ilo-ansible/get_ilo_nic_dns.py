@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 ###
-# Copyright (2016-2017) Hewlett Packard Enterprise Development LP
+# Copyright (2019) Hewlett Packard Enterprise Development LP
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # You may not use this file except in compliance with the License.
@@ -27,12 +27,31 @@ from redfish.rest.v1 import ServerDownOrUnreachableError
 
 from ansible.module_utils.basic import *
 
+DOCUMENTATION = '''
+---
+module: get_ilo_nic_dns
+short_description: Get iLO DNS Servers
+description:
+    - Provides an interface to Get iLO DNS Servers
+requirements:
+    - "python >= 3.6"
+author: "GSE"
+'''
+
+EXAMPLES = '''
+- name: get iLO DNS Servers
+  get_ilo_nic_dns:
+    ilo_ip: "x.x.x.x"
+    ilo_use: "username"
+    ilo_pass: "password"
+'''
+
 def get_ilo_nic_dns(redfishobj, get_active):
     instances = redfishobj.search_for_type("Manager.")
 
     for instance in instances:
         tmp = redfishobj.redfish_get(instance["@odata.id"])  
-        iLO_ver = tmp.dict["FirmwareVersion"].split(' ')[1]
+
         response = redfishobj.redfish_get(tmp.dict["EthernetInterfaces"]\
                                                                 ["@odata.id"])
 

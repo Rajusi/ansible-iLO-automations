@@ -27,6 +27,25 @@ from redfish.rest.v1 import ServerDownOrUnreachableError
 
 from ansible.module_utils.basic import *
 
+DOCUMENTATION = '''
+---
+module: set_ilo_nic_dns
+short_description: Set iLO DNS Servers
+description:
+    - Provides an interface to Set iLO DNS Servers
+requirements:
+    - "python >= 3.6"
+author: "GSE"
+'''
+
+EXAMPLES = '''
+- name: set iLO DNS Servers
+  set_ilo_nic_dns:
+    ilo_ip: "x.x.x.x"
+    ilo_use: "username"
+    ilo_pass: "password"
+    new_dns_servers: "1.1.1.1;2.2.2.2"
+'''
 
 def set_ilo_nic_dns(redfishobj, dns_servers):
     instances = redfishobj.search_for_type("Manager.")
